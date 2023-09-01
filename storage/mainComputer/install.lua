@@ -1,0 +1,1 @@
+shell.run("wget run https://raw.githubusercontent.com/o2dependent/cc-tweaked-scripts/main/storage/mainComputer/startup.lua")
