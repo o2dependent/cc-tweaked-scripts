@@ -20,9 +20,7 @@ while (true) do
 	end
 
 	event, button, x, y = os.pullEvent("mouse_click")
-	if (button == 1) then
-  	print(("The mouse button %s was pressed at %d, %d"):format(button, x, y))
-	end
+	print(("The mouse button %s was pressed at %d, %d"):format(button, x, y))
 
 
 end
