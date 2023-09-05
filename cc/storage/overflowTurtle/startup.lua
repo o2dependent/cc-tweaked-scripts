@@ -4,7 +4,6 @@ function getFileData()
 	-- print(rawData)
 	local data = textutils.unserializeJSON(rawData)
 	file.close()
-	print(textutils.serialize(data))
 	return data
 end
 
@@ -59,7 +58,7 @@ end
 function clickHandler()
 	local chestData = readNearbyChests()
 	saveData(chestData)
-	getFileData()
+	-- getFileData()
 end
 
 while (true) do
