@@ -35,13 +35,25 @@ function readNearbyChests()
 		data["left"] = readChest("left")
 	end
 
-	return textutils.serializeJSON(data)
+	return data
 end
 
 function saveData(data)
-		local file = fs.open("data.json", "w")
-		file.write(data)
-		file.close()
+	turtle.equipLeft()
+	local x,y,z = gps.locate()
+	local coords = {
+		["x"] = x,
+		["y"] = y,
+		["z"] = z
+	}
+	turtle.equipLeft()
+	local res = http.post("http://127.0.0.1:5500/items", textutils.serialiseJSON({["data"] = data,["coords"] = coords}), {
+		["Accept"] = "*/*",
+		["Content-Type"] = "application/json"
+	 })
+		-- local file = fs.open("data.json", "w")
+		-- file.write(data)
+		-- file.close()
 end
 
 function clickHandler()
