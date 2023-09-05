@@ -1,3 +1,5 @@
+IS_SCANNING = false
+
 function getFileData()
 	local file = fs.open("data.json", "r")
 	local rawData = file.readAll()
@@ -12,7 +14,7 @@ function readChest(side)
 	local items = chest.list()
 	local data = {}
 	for i in pairs(items) do
-		print(i)
+		-- print(i)
 		local detail = chest.getItemDetail(i)
 		-- table.insert(data,i, detail)
 		data[i] = detail
@@ -49,16 +51,60 @@ function saveData(data)
 	local res = http.post("http://127.0.0.1:5500/items", textutils.serialiseJSON({["data"] = data,["coords"] = coords}), {
 		["Accept"] = "*/*",
 		["Content-Type"] = "application/json"
-	 })
+	})
 		-- local file = fs.open("data.json", "w")
 		-- file.write(data)
 		-- file.close()
 end
 
 function clickHandler()
-	local chestData = readNearbyChests()
-	saveData(chestData)
+	if (IS_SCANNING) then
+		return
+	end
+	IS_SCANNING = true
+	turtle.equipLeft()
+	local homeX,homeY, homeZ = gps.locate()
+	turtle.equipLeft()
+
+	-- scan over all chests in storage
+	local isScanning = true
+	local dirForward = true
+	while (isScanning) do
+		local chestData = readNearbyChests()
+		saveData(chestData)
+		canMove = true
+		if (dirForward) then
+			canMove = turtle.forward()
+		else
+			canMove = turtle.back()
+		end
+		if (not canMove) then
+			dirForward = not dirForward
+			canGoUp = turtle.up()
+			if (not canGoUp) then
+				isScanning = false
+			end
+		end
+	end
+
+	-- return to home
+	turtle.equipLeft()
+	-- move down until y = homeY
+	local x,y,z = gps.locate()
+	while (y ~= homeY) do
+		turtle.down()
+		x,y,z = gps.locate()
+	end
+	-- move back until x = homeX and z = homeZ
+	while (x ~= homeX and z ~= homeZ) do
+		turtle.back()
+		x,y,z = gps.locate()
+	end
+
+	turtle.equipLeft()
+
 	-- getFileData()
+	IS_SCANNING = false
 end
 
 while (true) do
